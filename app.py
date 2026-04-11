@@ -4,36 +4,72 @@ import os
 
 app = Flask(__name__)
 
-# עיצוב ה-HTML וה-CSS
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מנתח אינסטגרם</title>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Assistant', sans-serif; background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; color: #333; }
-        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); width: 350px; text-align: center; }
-        h1 { margin-bottom: 20px; color: #bc1888; }
-        .stat { margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 10px; }
-        .stat label { display: block; font-size: 0.9em; color: #666; }
-        .stat span { font-size: 1.4em; font-weight: bold; color: #222; }
-        .er-high { color: #28a745 !important; }
-        .btn { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #bc1888; color: white; text-decoration: none; border-radius: 50px; transition: 0.3s; }
-        .btn:hover { background: #8a1265; }
-        .error { color: #dc3545; font-weight: bold; }
+        body { font-family: sans-serif; background: #fafafa; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 300px; text-align: center; }
+        .btn { display: inline-block; margin-top: 15px; padding: 10px 20px; background: #bc1888; color: white; text-decoration: none; border-radius: 5px; }
     </style>
 </head>
 <body>
     <div class="card">
         {% if error %}
-            <h1>אופס!</h1>
-            <p class="error">{{ error }}</p>
-            <a href="/" class="btn">נסה שוב</a>
+            <p style="color:red;">{{ error }}</p>
         {% else %}
-            <h1>נתוני פרופיל</h1>
+            <h2>@{{ username }}</h2>
+            <p>עוקבים: {{ followers }}</p>
+            <p>אחוז מעורבות: <strong>{{ engagement_rate }}</strong></p>
+        {% endif %}
+        <a href="/" class="btn">חיפוש חדש</a>
+    </div>
+</body>
+</html>
+"""
+
+@app.route('/')
+def home():
+    return '''
+    <div style="text-align:center; margin-top:50px; font-family:sans-serif;">
+        <h1>Instagram Analyzer</h1>
+        <form action="/analyze" method="get">
+            <input type="text" name="username" placeholder="שם משתמש" required>
+            <button type="submit">נתח</button>
+        </form>
+    </div>
+    '''
+
+@app.route('/analyze')
+def analyze():
+    username = request.args.get('username')
+    api_token = os.environ.get('APIFY_TOKEN')
+    
+    if not api_token:
+        return "Missing API Token in Render Settings", 500
+
+    url = f"https://api.apify.com/v2/acts/apify~instagram-profile-scraper/run-sync-get-dataset-items?token={api_token}"
+    try:
+        response = requests.post(url, json={"usernames": [username]}, timeout=60)
+        data = response.json()
+        if not data:
+            return render_template_string(HTML_TEMPLATE, error="לא נמצאו נתונים")
+        
+        user = data[0]
+        f_count = user.get('followersCount', 0)
+        posts = user.get('latestPosts', [])
+        avg_l = sum(p.get('likesCount', 0) for p in posts) / len(posts) if posts else 0
+        er = (avg_l / f_count) * 100 if f_count > 0 else 0
+        
+        return render_template_string(HTML_TEMPLATE, username=username, followers=f"{f_count:,}", engagement_rate=f"{round(er, 2)}%")
+    except:
+        return render_template_string(HTML_TEMPLATE, error="שגיאה בסריקה")
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=10000)
             <div class="stat">
                 <label>שם משתמש</label>
                 <span>@{{ username }}</span>
