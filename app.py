@@ -4,115 +4,80 @@ import requests
 
 app = Flask(__name__)
 
-# תבנית HTML/CSS מלאה, מעוצבת וחדשנית (Dark Mode Premium)
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Insta-Analyzer AI Pro | הליד הבא שלך כאן</title>
+    <title>Insta-Intelligence | Agency Grade</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .container { background-color: #1e1e1e; width: 100%; max-width: 480px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; border: 1px solid #333; }
-        .header { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: white; padding: 25px; text-align: center; }
-        .search-bar { padding: 20px; background-color: #252525; text-align: center; border-bottom: 1px solid #333; }
-        input { padding: 12px; width: 65%; border-radius: 8px; border: 1px solid #444; background-color: #121212; color: white; }
-        button { padding: 12px 20px; background-color: #bc1888; color: white; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-        button:hover { background-color: #8a1265; }
-        .section { padding: 20px; border-bottom: 1px solid #333; }
-        .score-box { text-align: center; padding: 30px; background-color: #252525; border-radius: 15px; margin: 20px; border: 1px solid #333; }
-        .score-value { font-size: 4em; font-weight: bold; color: #cc2366; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
-        .stat-card { background-color: #252525; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #333; }
-        .stat-value { font-size: 1.3em; font-weight: bold; color: #e0e0e0; }
-        .stat-label { font-size: 0.8em; color: #aaa; }
-        .gauge-container { width: 100px; height: 50px; margin: auto; position: relative; }
-        .gauge { width: 100%; height: 100%; border-radius: 50px 50px 0 0; background-color: #333; position: relative; overflow: hidden; }
-        .gauge-fill { width: 100%; height: 100%; position: absolute; top: 100%; left: 0; transform-origin: center top; transition: transform 0.5s; }
-        .insight-card { background-color: #2d2d2d; padding: 15px; border-radius: 10px; margin: 10px 0; border-right: 4px solid #bc1888; }
-        .tag { display: inline-block; padding: 5px 10px; border-radius: 15px; font-size: 0.8em; margin-left: 5px; color: white; }
-        .tag-sale { background-color: #e17055; }
-        .tag-info { background-color: #0984e3; }
-        .monetize-card { background-color: #d63031; color: white; padding: 20px; border-radius: 15px; margin: 20px; text-align: center; }
+        :root { --accent: #00d2ff; --bg: #0a0a0a; --card: #161616; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: white; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        .header { text-align: center; padding: 40px 0; background: linear-gradient(180deg, #1a1a1a 0%, var(--bg) 100%); border-radius: 30px; }
+        .badge-premium { background: gold; color: black; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 0.7em; text-transform: uppercase; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .card { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid #222; position: relative; overflow: hidden; }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); }
+        
+        .value { font-size: 1.8em; font-weight: 800; color: var(--accent); display: block; }
+        .label { font-size: 0.8em; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .price-tag { background: #2ecc71; color: white; padding: 15px; border-radius: 15px; text-align: center; margin-top: 20px; font-size: 1.2em; }
+        .price-value { font-size: 1.5em; font-weight: bold; display: block; }
+
+        .search-box { background: var(--card); padding: 10px; border-radius: 15px; display: flex; gap: 10px; margin-bottom: 30px; }
+        input { background: transparent; border: none; color: white; flex: 1; padding: 10px; outline: none; }
+        button { background: var(--accent); border: none; padding: 10px 25px; border-radius: 12px; font-weight: bold; cursor: pointer; }
+        
+        .report-btn { width: 100%; padding: 15px; background: white; color: black; border-radius: 15px; font-weight: bold; border: none; margin-top: 20px; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Insta-Analyzer AI Pro 🤖</h1>
-            <p>ניתוח פרופיל חכם ותובנות עסקיות</p>
+            <span class="badge-premium">Internal Intelligence</span>
+            <h1 style="font-size: 2.5em; margin: 10px 0;">Insta-Intel <span style="color:var(--accent)">PRO</span></h1>
+            <div class="search-box">
+                <form action="/analyze" method="get" style="display:flex; width:100%;">
+                    <input type="text" name="username" placeholder="הזן פרופיל VIP לניתוח..." required>
+                    <button type="submit">GENERATE REPORT</button>
+                </form>
+            </div>
         </div>
-        
-        <div class="search-bar">
-            <form action="/analyze" method="get">
-                <input type="text" name="username" placeholder="הכנס שם משתמש (למשל: nike)..." required>
-                <button type="submit">נתח פרופיל</button>
-            </form>
+
+        {% if username %}
+        <div class="grid">
+            <div class="card">
+                <span class="label">שווי שוק לפוסט</span>
+                <span class="value">${{ post_value }}</span>
+            </div>
+            <div class="card">
+                <span class="label">ציון אותנטיות</span>
+                <span class="value">{{ auth_score }}%</span>
+            </div>
+            <div class="card">
+                <span class="label">מעורבות קהל</span>
+                <span class="value">{{ engagement }}</span>
+            </div>
+            <div class="card">
+                <span class="label">פוטנציאל ויראלי</span>
+                <span class="value">{{ viral_potential }}</span>
+            </div>
         </div>
 
-        {% if error %}
-            <div class="section" style="color:#fab1a0; text-align:center;">{{ error }}</div>
-        {% elif username %}
-            <div class="score-box">
-                <h3>ציון איכות פרופיל</h3>
-                <div class="score-value">{{ score }}/10</div>
-                <p>מבוסס על מעורבות, אותנטיות ופעילות</p>
-            </div>
+        <div class="price-tag">
+            <span class="label" style="color: white; opacity: 0.8;">הכנסה שנתית משוערת מחסויות</span>
+            <span class="price-value">${{ annual_est }}</span>
+        </div>
 
-            <div class="section">
-                <strong>🔍 זיהוי עסקי ואותנטיות:</strong><br>
-                {% if is_selling %}
-                    <span class="tag tag-sale">💰 החשבון מוכר מוצר/שירות</span>
-                    <p style="font-size:0.9em; color:#aaa; margin-top:5px;">תחום משוער: {{ business_type }}</p>
-                {% else %}
-                    <span class="tag tag-info">🏠 חשבון אישי/תוכן</span>
-                {% endif %}
-                <br>
-                {% if authenticity == 'high' %}
-                    <span class="tag" style="background-color:#00b894;">✅ קהל אותנטי מאוד</span>
-                {% elif authenticity == 'low' %}
-                    <span class="tag" style="background-color:#d63031;">⚠️ חשד לעוקבים פיקטיביים</span>
-                {% else %}
-                    <span class="tag tag-info">📊 קהל ממוצע</span>
-                {% endif %}
-            </div>
+        <div class="card" style="margin-top:20px; border-right: 4px solid #f1c40f; border-left:none;">
+            <span class="label">💡 המלצה אסטרטגית לסוכן:</span>
+            <p style="font-size: 0.9em; line-height: 1.6;">{{ strategy }}</p>
+        </div>
 
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <span class="stat-value">{{ followers }}</span>
-                    <span class="stat-label">עוקבים</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-value">{{ following }}</span>
-                    <span class="stat-label">עוקב אחרי</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-value">{{ avg_likes }}</span>
-                    <span class="stat-label">ממוצע לייקים</span>
-                </div>
-                <div class="stat-card">
-                    <div class="gauge-container">
-                        <div class="gauge">
-                            <div class="gauge-fill" style="background-color:{{ er_color }}; transform: rotate({{ er_angle }}deg);"></div>
-                        </div>
-                    </div>
-                    <span class="stat-value" style="color:{{ er_color }};">{{ engagement }}</span>
-                    <span class="stat-label">אחוז מעורבות (ER)</span>
-                </div>
-            </div>
-
-            <div class="section">
-                <strong>💡 תובנות וטיפים לשיפור (AI Insights):</strong>
-                {% for insight in insights %}
-                    <div class="insight-card">{{ insight }}</div>
-                {% endfor %}
-            </div>
-
-            <div class="monetize-card">
-                <h3>הפרופיל שלך מפסיד כסף?</h3>
-                <p>השאר פרטים ואצור לך תוכנית Reels מותאמת אישית שתגדיל את המעורבות ב-300%!</p>
-                <button style="background-color:white; color:#d63031; border-radius:50px;">אני רוצה תוכנית!</button>
-            </div>
+        <button class="report-btn">הורד דוח PDF מלא (Premium Only)</button>
         {% endif %}
     </div>
 </body>
@@ -127,87 +92,36 @@ def home():
 def analyze():
     username = request.args.get('username')
     token = os.environ.get('APIFY_TOKEN')
-    
-    if not username: return render_template_string(HTML_TEMPLATE, error="נא להזין שם משתמש")
-    if not token: return "Missing APIFY_TOKEN in Render Settings", 500
-
     url = f"https://api.apify.com/v2/acts/apify~instagram-profile-scraper/run-sync-get-dataset-items?token={token}"
     
     try:
         res = requests.post(url, json={"usernames": [username]}, timeout=60)
-        data = res.json()
-        if not data: return render_template_string(HTML_TEMPLATE, error="פרופיל פרטי או לא נמצא")
+        data = res.json()[0]
         
-        user = data[0]
-        bio = user.get('biography', '').lower()
-        followers = user.get('followersCount', 0)
-        following = user.get('followsCount', 0)
-        posts = user.get('latestPosts', [])
-        
-        # חישוב נתונים יבשים
+        followers = data.get('followersCount', 0)
+        posts = data.get('latestPosts', [])
         avg_likes = sum(p.get('likesCount', 0) for p in posts) / len(posts) if posts else 0
         er = (avg_likes / followers) * 100 if followers > 0 else 0
         
-        # לוגיקה חכמה לזיהוי מכירה וסוג עסק
-        sale_words = ['shop', 'חנות', 'buy', 'order', 'קנו', 'sale', 'לינק', 'http', '.com', 'discount', 'קופון']
-        is_selling = any(word in bio for word in sale_words)
+        # חישוב שווי פוסט (לפי ממוצע שוק של $10 לכל 1000 עוקבים כפול מדד מעורבות)
+        val_per_post = (followers / 1000) * 10 * (1 + er/10)
+        annual_est = val_per_post * 52 # חישוב לפי פוסט אחד בשבוע
         
-        business_type = "לא זוהה סוג ספציפי"
-        if any(w in bio for w in ['fitness', 'כושר', 'אימון']): business_type = "כושר ותזונה"
-        elif any(w in bio for w in ['course', 'קורס', 'סדנה']): business_type = "קורסים וייעוץ"
-        elif any(w in bio for w in ['shop', 'חנות', 'משלוחים']): business_type = "חנות פיזית/דיגיטלית"
+        # לוגיקת אסטרטגיה
+        strategy = "הפרופיל במצב מצוין. מומלץ להעלות את מחיר החסות ב-15% ולמקד תוכן ב-Reels בימי שלישי."
+        if er < 1.5:
+            strategy = "אזהרה: המעורבות בדעיכה. יש לבצע 'ניקוי עוקבים' ולהגדיל אינטראקציה בסטורי כדי להצדיק את המחיר למפרסמים."
 
-        # חישוב מדד מעורבות ויזואלי (Gauge)
-        er_angle = min(er * 20, 180)
-        er_color = "#d63031" # אדום (נמוך)
-        if er > 1.5: er_color = "#fbc531" # צהוב (ממוצע)
-        if er > 3.5: er_color = "#00b894" # ירוק (מצוין)
-
-        # לוגיקת AI לציון, אותנטיות ותובנות
-        score = 5
-        insights = []
-        authenticity = 'medium'
-
-        # בדיקת מעורבות
-        if er > 4: 
-            score += 3
-            insights.append("🔥 מעורבות מצוינת! הקהל שלך מגיב חזק לתוכן.")
-        elif er < 1:
-            score -= 2
-            insights.append("📉 המעורבות נמוכה. נסה להעלות יותר סרטונים (Reels) כדי להגדיל חשיפה.")
-        else:
-            insights.append("📊 המעורבות ממוצעת. נסה להוסיף 'הנעה לפעולה' (CTA) בפוסטים.")
-
-        # בדיקת כוונת מכירה
-        if is_selling:
-            score += 1
-            insights.append(f"💰 זוהתה כוונת מכירה בתחום {business_type}.")
-            if "http" not in bio and ".com" not in bio:
-                insights.append("⚠️ אזהרה: אין לינק ישיר לרכישה ב-Bio, זה מפסיד מכירות!")
-        else:
-            insights.append("🏠 חשבון אישי/תוכן - הוספת 'הנעה לפעולה' ממוקדת ב-Bio תגדיל עוקבים.")
-
-        # בדיקת אותנטיות
-        if er > 15 and followers > 1000:
-            authenticity = 'low'
-            insights.append("🔶 אותנטיות: מעורבות חריגה מאוד - ייתכן שימוש בבוטים או 'קבוצות תמיכה'.")
-        elif er < 0.3 and followers > 10000:
-            authenticity = 'low'
-            insights.append("📉 אותנטיות: יחס מעורבות נמוך במיוחד - חשד לעוקבים פיקטיביים (גוססים).")
-        elif followers > 1000:
-            authenticity = 'high'
-            score += 1
-
-        # החזרת הנתונים לתצוגה
         return render_template_string(HTML_TEMPLATE, 
-            username=username, followers=f"{followers:,}", following=f"{following:,}", 
-            avg_likes=f"{avg_likes:,}", engagement=f"{round(er, 2)}%",
-            is_selling=is_selling, business_type=business_type,
-            er_angle=er_angle, er_color=er_color,
-            score=min(max(score, 1), 10), insights=insights, authenticity=authenticity)
-            
+            username=username, 
+            post_value=f"{int(val_per_post):,}",
+            auth_score=int(100 - (er*2)) if er < 2 else 94,
+            engagement=f"{round(er, 2)}%",
+            viral_potential="HIGH" if er > 3 else "MEDIUM",
+            annual_est=f"{int(annual_est):,}",
+            strategy=strategy)
     except:
-        return render_template_string(HTML_PAGE, error="שגיאה בסריקה")
+        return render_template_string(HTML_TEMPLATE, error="Error analyzing VIP profile")
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=10000)
