@@ -4,93 +4,114 @@ import requests
 
 app = Flask(__name__)
 
-# תבנית העיצוב האולטימטיבית - ELITE SUITE
+# תבנית ה-VIP Intelligence Suite
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INSTA-INTEL | Intelligence Suite</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <title>INSTA-INTEL | Elite Business Suite</title>
     <style>
-        :root { --primary: #00f2ff; --gold: #d4af37; --bg: #050505; --glass: rgba(255, 255, 255, 0.03); }
-        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
-        .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% -20%, #1a1a2e 0%, #050505 100%); z-index: -1; }
-        .container { max-width: 850px; margin: 40px auto; padding: 20px; }
+        :root { --accent: #00f2ff; --gold: #d4af37; --bg: #050505; }
+        body { 
+            background-color: var(--bg); 
+            color: white; 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            margin: 0; 
+            background: radial-gradient(circle at top right, #1a1a2e, #050505);
+            min-height: 100vh;
+        }
+        .container { max-width: 800px; margin: auto; padding: 40px 20px; }
         
-        /* Header */
-        header { text-align: center; margin-bottom: 50px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 30px; }
-        .logo { font-weight: 900; font-size: 2.8rem; letter-spacing: -2px; color: #fff; }
-        .badge { background: var(--gold); color: #000; padding: 3px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: bold; vertical-align: middle; margin-right: 10px; }
+        /* Glassmorphism Header */
+        header { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .top-label { color: var(--gold); letter-spacing: 3px; font-size: 0.7em; font-weight: bold; margin-bottom: 10px; display: block; }
+        h1 { font-size: 3em; margin: 0; font-weight: 900; letter-spacing: -1px; }
 
-        /* Search Area */
-        .search-area { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); padding: 25px; border-radius: 20px; display: flex; gap: 15px; margin-bottom: 40px; }
-        input { background: rgba(0,0,0,0.4); border: 1px solid #333; color: #fff; padding: 15px; border-radius: 12px; flex: 1; font-size: 1rem; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0,242,255,0.15); }
-        button { background: #fff; color: #000; border: none; padding: 0 35px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,255,255,0.2); }
+        /* Professional Search */
+        .search-container { margin-top: 30px; display: flex; gap: 10px; }
+        input { 
+            flex: 1; background: rgba(0,0,0,0.5); border: 1px solid #333; 
+            color: white; padding: 18px 25px; border-radius: 15px; font-size: 1rem;
+            outline: none; transition: 0.3s;
+        }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); }
+        button { 
+            background: white; color: black; border: none; padding: 0 30px; 
+            border-radius: 15px; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        button:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,255,255,0.1); }
 
-        /* Results Grid */
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .card { background: var(--glass); border: 1px solid rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; text-align: center; }
-        .card.featured { border: 1px solid var(--primary); background: rgba(0, 242, 255, 0.02); }
-        
-        .stat-label { color: #888; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 8px; }
-        .stat-value { font-size: 1.8rem; font-weight: 700; color: #fff; }
+        /* Intel Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px; }
+        .stat-card { 
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); 
+            padding: 25px; border-radius: 25px; text-align: center; transition: 0.3s;
+        }
+        .stat-card:hover { background: rgba(255,255,255,0.07); border-color: var(--accent); }
+        .val { font-size: 2rem; font-weight: bold; color: var(--accent); display: block; }
+        .lbl { font-size: 0.7em; color: #888; text-transform: uppercase; margin-top: 10px; letter-spacing: 1px; }
 
-        /* Strategy Memo - The "Money" Part */
-        .memo-box { background: #fff; color: #000; padding: 30px; border-radius: 5px; margin-top: 30px; font-family: 'Courier New', monospace; position: relative; }
-        .memo-box::before { content: "CONFIDENTIAL EXEC REPORT"; background: #ff3f34; color: #fff; padding: 4px 12px; font-size: 0.7rem; position: absolute; top: -10px; right: 20px; border-radius: 3px; }
+        /* The "Memo" - Executive View */
+        .memo { 
+            background: #fff; color: #111; padding: 35px; border-radius: 4px; 
+            margin-top: 40px; font-family: 'Courier New', monospace; box-shadow: 20px 20px 0px var(--gold);
+        }
+        .memo-header { border-bottom: 2px solid #111; margin-bottom: 20px; padding-bottom: 10px; font-weight: bold; }
 
-        .footer { text-align: center; margin-top: 60px; font-size: 0.7rem; color: #444; letter-spacing: 1px; }
+        .persona-tag { 
+            display: inline-block; background: var(--accent); color: #000; 
+            padding: 4px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
-    <div class="bg-glow"></div>
     <div class="container">
         <header>
-            <div class="logo">INSTA-INTEL <span class="badge">VIP ACCESS</span></div>
-            <p style="color: #666; font-weight: 300;">ניתוח נכסים דיגיטליים וחיזוי שווי שוק</p>
+            <span class="top-label">HIGH-NET-WORTH ANALYSIS UNIT</span>
+            <h1>Insta<span style="color:var(--accent)">Intel</span>.</h1>
+            <div class="search-container">
+                <form action="/analyze" method="get" style="display:flex; width:100%; gap:10px;">
+                    <input type="text" name="username" placeholder="הזן שם משתמש לניתוח שווי שוק..." required>
+                    <button type="submit">ANALYZE</button>
+                </form>
+            </div>
         </header>
-
-        <div class="search-area">
-            <form action="/analyze" method="get" style="display:flex; width:100%; gap:12px;">
-                <input type="text" name="username" placeholder="הזן שם משתמש לניתוח עומק..." required>
-                <button type="submit">RUN ANALYSIS</button>
-            </form>
-        </div>
 
         {% if username %}
         <div class="grid">
-            <div class="card">
-                <span class="stat-label">סיווג פרסונה</span>
-                <span class="stat-value" style="font-size: 1.3rem; color: var(--gold);">{{ persona_name }}</span>
+            <div class="stat-card">
+                <span class="lbl">שווי מדיה (פוסט)</span>
+                <span class="val">${{ post_value }}</span>
             </div>
-            <div class="card featured">
-                <span class="stat-label">שווי מוערך לפוסט</span>
-                <span class="stat-value" style="color: #2ecc71;">${{ post_value }}</span>
+            <div class="stat-card">
+                <span class="lbl">מדד השפעה</span>
+                <span class="val">{{ engagement }}</span>
             </div>
-            <div class="card">
-                <span class="stat-label">מדד השפעה (ER)</span>
-                <span class="stat-value">{{ engagement }}</span>
+            <div class="stat-card">
+                <span class="lbl">פוטנציאל שנתי</span>
+                <span class="val" style="color: var(--gold);">${{ annual_val }}</span>
             </div>
         </div>
 
-        <div class="memo-box">
-            <h3 style="margin-top:0;">📋 ניתוח אסטרטגי עבור: @{{ username }}</h3>
-            <p style="font-size: 0.95rem; line-height: 1.6;">{{ strategy }}</p>
-            <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; font-size: 0.8rem; font-weight: bold;">
-                המלצה למזכירה: נא לתזמן פגישת ייעוץ דחופה על בסיס הנתונים לעיל.
+        <div class="memo">
+            <div class="memo-header">CONFIDENTIAL STRATEGY MEMO // @{{ username }}</div>
+            <span class="persona-tag">פרסונה מזוהה: {{ persona_name }}</span>
+            <p style="line-height: 1.6;">{{ strategy }}</p>
+            <div style="margin-top: 30px; font-size: 0.8rem; border-top: 1px solid #ddd; padding-top: 10px;">
+                <strong>הנחיה למזכירה:</strong> נא לתייק בתיק נכסים דיגיטליים ולהכין טיוטת חוזה בהתאם לשווי השוק המוצג.
             </div>
-        </div>
-        
-        <div style="text-align:center; margin-top:30px;">
-            <p style="color:#555; font-size: 0.8rem;">הדוח המלא (42 עמודים) זמין למנויי Enterprise בלבד</p>
         </div>
         {% endif %}
-
-        <div class="footer">SECURE ENCRYPTED INTELLIGENCE UNIT // 2026</div>
     </div>
 </body>
 </html>
@@ -115,28 +136,29 @@ def analyze():
         avg_likes = sum(p.get('likesCount', 0) for p in posts) / len(posts) if posts else 0
         er = (avg_likes / followers) * 100 if followers > 0 else 0
         
-        # לוגיקה עסקית לפי פרסונות
-        if followers > 200000:
-            p_name = "VIP Asset"
-            strategy = "הפרופיל מזוהה כנכס מאקרו. שווי המדיה שלו גבוה, אך יש להקפיד על 'ניקוי' תגובות רעילות כדי לשמור על יוקרה מול מפרסמים."
+        # לוגיקה לפרסונות - מנהלים ומזכירות
+        if followers > 100000:
+            persona = "High-Impact Asset"
+            strategy = f"הפרופיל של @{username} פועל ברמת VIP. הנתונים מראים כי כל פוסט מייצר חשיפה שוות ערך לקמפיין חוצות. המלצה למנהל: אין להתפשר על פחות מהמחיר הנקוב למעלה."
         elif "shop" in data.get('biography', '').lower() or "חנות" in data.get('biography', ''):
-            p_name = "Executive Biz"
-            strategy = "זוהה עסק פעיל. המנהל העסוק צריך להבין שכל 0.1% מעורבות שווה אלפי שקלים במכירות. יש להגדיל את כמות ה-Reels באופן מיידי."
+            persona = "The Business Driver"
+            strategy = f"זהו חשבון ממוקד המרה. המנהל העסוק חייב להבין שה-Engagement הנוכחי ({round(er,2)}%) הוא צוואר הבקבוק של המכירות. יש להגביר פעילות Reels."
         else:
-            p_name = "Rising Creator"
-            strategy = "חשבון בנסיקה. המזכירה צריכה לוודא שכל פנייה ב-DM מטופלת, שכן פוטנציאל הויראליות של החשבון גבוה מהממוצע."
+            persona = "Growth Professional"
+            strategy = f"הפרופיל נמצא בשלב צבירת סמכות. המזכירה הלחוצה יכולה להירגע - הקצב חיובי, אך יש צורך באוטומציה של תגובות כדי לשמור על מדד ההשפעה."
 
-        # חישוב כסף (נוסחת סוכנות משופרת)
-        val = (followers / 1000) * 18 * (1 + er/4)
+        # חישוב שווי (נוסחה יוקרתית)
+        val = (followers / 1000) * 20 * (1 + er/3)
         
         return render_template_string(HTML_TEMPLATE, 
             username=username, 
             engagement=f"{round(er, 2)}%",
-            persona_name=p_name,
+            persona_name=persona,
             post_value=f"{int(val):,}",
+            annual_val=f"{int(val * 52):,}",
             strategy=strategy)
     except:
-        return render_template_string(HTML_TEMPLATE, error="Error accessing secure intel")
+        return render_template_string(HTML_TEMPLATE, error="System Error: Access Denied")
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=10000)
