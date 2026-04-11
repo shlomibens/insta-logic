@@ -4,16 +4,16 @@ import requests
 
 app = Flask(__name__)
 
-# תבנית HTML/CSS מלאה ומעוצבת (Premium Dark Mode)
+# תבנית HTML/CSS מלאה, מעוצבת וחדשנית (Dark Mode Premium)
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Insta-Analyzer AI Pro</title>
+    <title>Insta-Analyzer AI Pro | הליד הבא שלך כאן</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .container { background-color: #1e1e1e; width: 100%; max-width: 480px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; }
+        .container { background-color: #1e1e1e; width: 100%; max-width: 480px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; border: 1px solid #333; }
         .header { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: white; padding: 25px; text-align: center; }
         .search-bar { padding: 20px; background-color: #252525; text-align: center; border-bottom: 1px solid #333; }
         input { padding: 12px; width: 65%; border-radius: 8px; border: 1px solid #444; background-color: #121212; color: white; }
@@ -33,18 +33,19 @@ HTML_TEMPLATE = """
         .tag { display: inline-block; padding: 5px 10px; border-radius: 15px; font-size: 0.8em; margin-left: 5px; color: white; }
         .tag-sale { background-color: #e17055; }
         .tag-info { background-color: #0984e3; }
+        .monetize-card { background-color: #d63031; color: white; padding: 20px; border-radius: 15px; margin: 20px; text-align: center; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Insta-Analyzer AI 🤖</h1>
+            <h1>Insta-Analyzer AI Pro 🤖</h1>
             <p>ניתוח פרופיל חכם ותובנות עסקיות</p>
         </div>
         
         <div class="search-bar">
             <form action="/analyze" method="get">
-                <input type="text" name="username" placeholder="הכנס שם משתמש (למשל: nasa)..." required>
+                <input type="text" name="username" placeholder="הכנס שם משתמש (למשל: nike)..." required>
                 <button type="submit">נתח פרופיל</button>
             </form>
         </div>
@@ -106,6 +107,12 @@ HTML_TEMPLATE = """
                     <div class="insight-card">{{ insight }}</div>
                 {% endfor %}
             </div>
+
+            <div class="monetize-card">
+                <h3>הפרופיל שלך מפסיד כסף?</h3>
+                <p>השאר פרטים ואצור לך תוכנית Reels מותאמת אישית שתגדיל את המעורבות ב-300%!</p>
+                <button style="background-color:white; color:#d63031; border-radius:50px;">אני רוצה תוכנית!</button>
+            </div>
         {% endif %}
     </div>
 </body>
@@ -151,7 +158,7 @@ def analyze():
         elif any(w in bio for w in ['shop', 'חנות', 'משלוחים']): business_type = "חנות פיזית/דיגיטלית"
 
         # חישוב מדד מעורבות ויזואלי (Gauge)
-        er_angle = min(er * 20, 180) # זווית הסיבוב של הגרף
+        er_angle = min(er * 20, 180)
         er_color = "#d63031" # אדום (נמוך)
         if er > 1.5: er_color = "#fbc531" # צהוב (ממוצע)
         if er > 3.5: er_color = "#00b894" # ירוק (מצוין)
