@@ -9,75 +9,84 @@ HTML_TEMPLATE = """
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Insta-Intelligence | Agency Grade</title>
+    <title>INSTA-INTEL | Elite Executive Suite</title>
     <style>
-        :root { --accent: #00d2ff; --bg: #0a0a0a; --card: #161616; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: white; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: auto; }
-        .header { text-align: center; padding: 40px 0; background: linear-gradient(180deg, #1a1a1a 0%, var(--bg) 100%); border-radius: 30px; }
-        .badge-premium { background: gold; color: black; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 0.7em; text-transform: uppercase; }
+        :root { --neon: #00f2ff; --gold: #d4af37; --glass: rgba(255, 255, 255, 0.05); }
+        body { background: #050505; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+        .executive-container { max-width: 800px; margin: auto; background: linear-gradient(145deg, #111, #000); border-radius: 40px; border: 1px solid #333; padding: 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.8); }
         
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
-        .card { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid #222; position: relative; overflow: hidden; }
-        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); }
+        /* Header Section */
+        .top-secret { letter-spacing: 5px; color: var(--gold); font-size: 0.7em; text-transform: uppercase; margin-bottom: 10px; display: block; text-align: center; }
+        h1 { font-weight: 200; font-size: 2.5em; text-align: center; margin-top: 0; }
         
-        .value { font-size: 1.8em; font-weight: 800; color: var(--accent); display: block; }
-        .label { font-size: 0.8em; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        /* Personas Card */
+        .persona-badge { background: var(--glass); border: 1px solid var(--neon); padding: 15px; border-radius: 20px; margin: 20px 0; display: flex; align-items: center; gap: 15px; }
+        .persona-icon { font-size: 2em; }
         
-        .price-tag { background: #2ecc71; color: white; padding: 15px; border-radius: 15px; text-align: center; margin-top: 20px; font-size: 1.2em; }
-        .price-value { font-size: 1.5em; font-weight: bold; display: block; }
+        /* Matrix Grid */
+        .matrix { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
+        .stat-item { background: var(--glass); padding: 20px; border-radius: 25px; border: 1px solid #222; text-align: center; }
+        .val { font-size: 1.6em; font-weight: bold; color: var(--neon); display: block; }
+        .lbl { font-size: 0.7em; color: #888; text-transform: uppercase; margin-top: 5px; }
+        
+        /* Money Section */
+        .money-card { background: linear-gradient(90deg, #1e272e, #000); border: 1px solid #27ae60; padding: 25px; border-radius: 25px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Strategy Memo */
+        .memo { background: #fff; color: #000; padding: 25px; border-radius: 5px; margin-top: 30px; position: relative; font-family: 'Courier New', monospace; }
+        .memo::before { content: 'CONFIDENTIAL MEMO'; position: absolute; top: -10px; left: 20px; background: #d63031; color: white; padding: 2px 10px; font-size: 0.8em; }
 
-        .search-box { background: var(--card); padding: 10px; border-radius: 15px; display: flex; gap: 10px; margin-bottom: 30px; }
-        input { background: transparent; border: none; color: white; flex: 1; padding: 10px; outline: none; }
-        button { background: var(--accent); border: none; padding: 10px 25px; border-radius: 12px; font-weight: bold; cursor: pointer; }
-        
-        .report-btn { width: 100%; padding: 15px; background: white; color: black; border-radius: 15px; font-weight: bold; border: none; margin-top: 20px; cursor: pointer; }
+        input { background: #111; border: 1px solid #333; color: white; padding: 15px; border-radius: 50px; width: 70%; margin-left: 10px; }
+        button { background: white; color: black; border: none; padding: 15px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: var(--neon); transform: scale(1.05); }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <span class="badge-premium">Internal Intelligence</span>
-            <h1 style="font-size: 2.5em; margin: 10px 0;">Insta-Intel <span style="color:var(--accent)">PRO</span></h1>
-            <div class="search-box">
-                <form action="/analyze" method="get" style="display:flex; width:100%;">
-                    <input type="text" name="username" placeholder="הזן פרופיל VIP לניתוח..." required>
-                    <button type="submit">GENERATE REPORT</button>
-                </form>
-            </div>
+    <div class="executive-container">
+        <span class="top-secret">LEVEL 5 ACCESS ONLY</span>
+        <h1>Executive <span style="font-weight:800">Intelligence</span></h1>
+        
+        <div style="text-align:center; margin-bottom: 40px;">
+            <form action="/analyze" method="get">
+                <input type="text" name="username" placeholder="הכנס פרופיל יעד לניתוח..." required>
+                <button type="submit">RUN INTEL</button>
+            </form>
         </div>
 
         {% if username %}
-        <div class="grid">
-            <div class="card">
-                <span class="label">שווי שוק לפוסט</span>
-                <span class="value">${{ post_value }}</span>
-            </div>
-            <div class="card">
-                <span class="label">ציון אותנטיות</span>
-                <span class="value">{{ auth_score }}%</span>
-            </div>
-            <div class="card">
-                <span class="label">מעורבות קהל</span>
-                <span class="value">{{ engagement }}</span>
-            </div>
-            <div class="card">
-                <span class="label">פוטנציאל ויראלי</span>
-                <span class="value">{{ viral_potential }}</span>
+        <div class="persona-badge">
+            <div class="persona-icon">{{ persona_icon }}</div>
+            <div>
+                <strong style="color:var(--gold)">זיהוי פרסונה: {{ persona_name }}</strong><br>
+                <small style="color:#aaa">{{ persona_desc }}</small>
             </div>
         </div>
 
-        <div class="price-tag">
-            <span class="label" style="color: white; opacity: 0.8;">הכנסה שנתית משוערת מחסויות</span>
-            <span class="price-value">${{ annual_est }}</span>
+        <div class="matrix">
+            <div class="stat-item"><span class="val">{{ followers }}</span><span class="lbl">Reach</span></div>
+            <div class="stat-item"><span class="val">{{ engagement }}</span><span class="lbl">Influence</span></div>
+            <div class="stat-item"><span class="val">{{ posts_count }}</span><span class="lbl">Activity</span></div>
         </div>
 
-        <div class="card" style="margin-top:20px; border-right: 4px solid #f1c40f; border-left:none;">
-            <span class="label">💡 המלצה אסטרטגית לסוכן:</span>
-            <p style="font-size: 0.9em; line-height: 1.6;">{{ strategy }}</p>
+        <div class="money-card">
+            <div>
+                <span class="lbl" style="color:#2ecc71">שווי מדיה מוערך (EMV)</span>
+                <span style="font-size: 2em; font-weight: 800; display: block;">${{ post_value }} <small style="font-size: 0.4em; color: #888;">לפוסט</small></span>
+            </div>
+            <div style="text-align:left">
+                <span class="lbl">פוטנציאל רווח שנתי</span>
+                <span style="color:#2ecc71; font-weight: bold;">${{ annual_val }}</span>
+            </div>
         </div>
 
-        <button class="report-btn">הורד דוח PDF מלא (Premium Only)</button>
+        <div class="memo">
+            <strong>מסקנות אסטרטגיות למקבלי החלטות:</strong><br><br>
+            {{ strategy }}
+            <br><br>
+            <div style="border-top: 1px solid #ddd; padding-top: 10px; font-size: 0.8em;">
+                נחתם ע"י: AI Intelligence Unit | תאריך ניתוח: 2024
+            </div>
+        </div>
         {% endif %}
     </div>
 </body>
@@ -98,30 +107,23 @@ def analyze():
         res = requests.post(url, json={"usernames": [username]}, timeout=60)
         data = res.json()[0]
         
-        followers = data.get('followersCount', 0)
+        f_count = data.get('followersCount', 0)
         posts = data.get('latestPosts', [])
         avg_likes = sum(p.get('likesCount', 0) for p in posts) / len(posts) if posts else 0
-        er = (avg_likes / followers) * 100 if followers > 0 else 0
+        er = (avg_likes / f_count) * 100 if f_count > 0 else 0
         
-        # חישוב שווי פוסט (לפי ממוצע שוק של $10 לכל 1000 עוקבים כפול מדד מעורבות)
-        val_per_post = (followers / 1000) * 10 * (1 + er/10)
-        annual_est = val_per_post * 52 # חישוב לפי פוסט אחד בשבוע
-        
-        # לוגיקת אסטרטגיה
-        strategy = "הפרופיל במצב מצוין. מומלץ להעלות את מחיר החסות ב-15% ולמקד תוכן ב-Reels בימי שלישי."
-        if er < 1.5:
-            strategy = "אזהרה: המעורבות בדעיכה. יש לבצע 'ניקוי עוקבים' ולהגדיל אינטראקציה בסטורי כדי להצדיק את המחיר למפרסמים."
+        # לוגיקת פרסונות חכמה
+        if f_count > 500000:
+            p_icon, p_name, p_desc = "🌟", "הסלבריטאי", "חשבון בעל השפעה מאסיבית. דורש טיפול של סוכנות VIP."
+        elif "shop" in data.get('biography', '').lower() or "חנות" in data.get('biography', ''):
+            p_icon, p_name, p_desc = "💼", "המנהל העסוק", "פרופיל עסקי ממוקד מכירות. מחפש ROI מיידי."
+        elif f_count < 5000:
+            p_icon, p_name, p_desc = "📎", "המזכירה הלחוצה", "פרופיל בשלבי צמיחה. זקוק לסדר ואוטומציה."
+        else:
+            p_icon, p_name, p_desc = "📱", "היוצר הדינמי", "משפיען בנסיקה. זמן טוב להשקעה."
 
+        # חישוב שווי שוק
+        post_val = (f_count / 1000) * 15 * (1 + er/10)
+        
         return render_template_string(HTML_TEMPLATE, 
-            username=username, 
-            post_value=f"{int(val_per_post):,}",
-            auth_score=int(100 - (er*2)) if er < 2 else 94,
-            engagement=f"{round(er, 2)}%",
-            viral_potential="HIGH" if er > 3 else "MEDIUM",
-            annual_est=f"{int(annual_est):,}",
-            strategy=strategy)
-    except:
-        return render_template_string(HTML_TEMPLATE, error="Error analyzing VIP profile")
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=10000)
+            username=username, followers=f"{f_count:,}",
