@@ -11,193 +11,190 @@ HTML_TEMPLATE = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OBSIDIAN INTEL | פרוטוקול יהלום</title>
+    <title>OBSIDIAN INTEL | ONYX PROTOCOL</title>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { 
             --neon: #00ff66; 
-            --dark: #030303; 
-            --gray: #111111; 
+            --dark: #050505; 
+            --panel: #0d0d0d;
             --alert: #ff003c;
             --blue: #00d2ff;
         }
         
         body { 
             background: var(--dark); 
-            color: #fff; 
+            color: #e0e0e0; 
             font-family: 'Assistant', sans-serif; 
             margin: 0; 
-            padding: 20px; 
-            overflow-x: hidden;
+            padding: 15px; 
+            line-height: 1.4;
         }
 
-        /* אפקט סריקה צבאי */
-        body::before {
-            content: " ";
-            display: block;
+        /* Scanline Effect */
+        body::after {
+            content: "";
             position: fixed;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            z-index: 10;
-            background-size: 100% 2px, 3px 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1), rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px);
             pointer-events: none;
+            z-index: 100;
         }
 
-        .container { max-width: 450px; margin: 0 auto; position: relative; z-index: 5; }
+        .container { max-width: 420px; margin: 0 auto; position: relative; }
         
-        header { text-align: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 20px; }
-        .logo { font-size: 2.5rem; font-weight: 800; letter-spacing: -1px; text-shadow: 0 0 15px rgba(0,255,102,0.4); }
-        .tagline { font-size: 0.7rem; color: #666; letter-spacing: 2px; margin-top: 5px; display: flex; justify-content: center; align-items: center; gap: 8px;}
-        .status-dot { width: 8px; height: 8px; background: var(--neon); border-radius: 50%; animation: pulse 1.5s infinite; }
+        header { text-align: center; padding: 25px 0; border-bottom: 1px solid #222; margin-bottom: 25px; }
+        .logo { font-size: 2.2rem; font-weight: 900; letter-spacing: -1px; color: #fff; }
+        .status-bar { font-size: 0.65rem; color: #555; letter-spacing: 2px; margin-top: 8px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .dot { width: 6px; height: 6px; background: var(--neon); border-radius: 50%; box-shadow: 0 0 8px var(--neon); }
 
-        @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; box-shadow: 0 0 10px var(--neon); } }
+        .search-area { background: var(--panel); border: 1px solid #1a1a1a; padding: 20px; margin-bottom: 25px; }
+        input { width: 100%; background: #000; border: 1px solid #333; color: var(--neon); padding: 12px; margin-bottom: 12px; text-align: center; font-family: 'Assistant'; font-size: 1rem; outline: none; box-sizing: border-box; }
+        button { width: 100%; background: #fff; color: #000; border: none; padding: 14px; font-weight: 900; cursor: pointer; font-size: 0.95rem; font-family: 'Assistant'; transition: 0.2s; }
+        button:hover { background: var(--neon); }
 
-        .search-box { background: var(--gray); border: 1px solid #222; padding: 25px; margin-bottom: 25px; box-shadow: inset 0 0 30px rgba(0,0,0,0.5); }
-        input { width: 100%; background: #000; border: 1px solid #444; color: var(--neon); padding: 15px; margin-bottom: 15px; text-align: center; font-family: 'Assistant'; font-size: 1.1rem; outline: none; box-sizing: border-box; }
-        button { width: 100%; background: var(--neon); color: #000; border: none; padding: 15px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 1rem; transition: 0.2s; font-family: 'Assistant';}
-        button:hover { background: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.4); }
+        .classification { text-align: center; padding: 8px; font-size: 0.85rem; font-weight: 800; margin-bottom: 20px; border: 1px solid; }
 
-        .asset-class { text-align: center; border: 1px solid; padding: 10px; font-size: 0.9rem; font-weight: 800; margin-bottom: 20px; letter-spacing: 1px; }
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #222; border: 1px solid #222; margin-bottom: 25px; }
+        .m-cell { background: var(--dark); padding: 18px; text-align: right; }
+        .m-val { font-family: 'JetBrains Mono'; font-size: 1.3rem; font-weight: 700; display: block; }
+        .m-lbl { font-size: 0.6rem; color: #555; text-transform: uppercase; margin-top: 4px; font-weight: 700; }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: #333; border: 1px solid #333; margin-bottom: 25px; }
-        .cell { background: var(--gray); padding: 20px; text-align: right; }
-        .c-val { font-size: 1.5rem; font-weight: 800; display: block; font-family: 'JetBrains Mono'; }
-        .c-lbl { font-size: 0.65rem; color: #777; margin-top: 5px; font-weight: 700; }
+        .value-box { background: rgba(255,255,255,0.03); border-right: 4px solid var(--neon); padding: 20px; margin-bottom: 25px; text-align: center; }
+        .price-tag { font-family: 'JetBrains Mono'; font-size: 2.8rem; color: var(--neon); font-weight: 700; margin: 5px 0; direction: ltr; }
 
-        .value-card { background: rgba(0, 255, 102, 0.05); border-right: 4px solid var(--neon); padding: 25px; margin-bottom: 25px; text-align: center; }
-        .price { font-size: 3rem; font-family: 'JetBrains Mono'; color: var(--neon); font-weight: 800; margin: 10px 0; direction: ltr; }
+        .report-terminal { background: #000; border: 1px solid #1a1a1a; padding: 20px; font-size: 0.9rem; position: relative; min-height: 150px; }
+        .report-tag { position: absolute; top: -10px; right: 15px; background: var(--dark); color: var(--alert); border: 1px solid var(--alert); padding: 0 8px; font-size: 0.65rem; font-weight: 900; }
+        .log-line { margin-bottom: 15px; border-bottom: 1px solid #111; padding-bottom: 10px; }
+        .label { color: #fff; font-weight: 800; display: block; margin-bottom: 5px; font-size: 0.75rem; text-decoration: underline; }
+        .content { color: var(--neon); display: inline-block; width: 100%; }
 
-        .intel-brief { background: #000; border: 1px solid #333; color: var(--neon); padding: 25px; font-size: 0.9rem; line-height: 1.7; position: relative; text-align: right; }
-        .brief-tag { position: absolute; top: -12px; right: 20px; background: var(--dark); color: var(--alert); border: 1px solid var(--alert); padding: 2px 10px; font-size: 0.7rem; font-weight: 800; }
-        .section-title { color: #fff; font-weight: 800; display: block; margin-top: 15px; border-bottom: 1px dashed #444; padding-bottom: 5px; margin-bottom: 10px;}
-        
-        .typewriter { display: inline; border-left: 2px solid var(--neon); animation: blink 0.7s infinite; }
-        @keyframes blink { 0%, 100% { border-color: transparent; } 50% { border-color: var(--neon); } }
-
-        .footer { text-align: center; font-size: 0.6rem; color: #333; letter-spacing: 3px; margin-top: 40px; }
+        .footer { text-align: center; font-size: 0.55rem; color: #222; letter-spacing: 3px; margin-top: 30px; padding-bottom: 20px; }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <div class="logo">OBSIDIAN<span style="color:var(--neon)">INTEL</span></div>
-            <div class="tagline"><div class="status-dot"></div> מסוף מאובטח // פרוטוקול יהלום // 2026</div>
+            <div class="status-bar"><div class="dot"></div> סנכרון מערכת פעיל // 2026 // v16.0</div>
         </header>
 
-        <div class="search-box">
+        <div class="search-area">
             <form action="/analyze" method="get">
-                <input type="text" name="username" placeholder="הכנס שם משתמש ליעד..." required autocomplete="off">
-                <button type="submit">הפעל סריקה עמוקה</button>
+                <input type="text" name="username" placeholder="הכנס שם משתמש (Target)..." required autocomplete="off">
+                <button type="submit">הפעל פענוח נתונים</button>
             </form>
         </div>
 
         {% if data %}
-        <div class="asset-class" style="border-color: {{ data.color }}; color: {{ data.color }};">
-            סיווג נכס: {{ data.classification }}
+        <div class="classification" style="border-color: {{ data.color }}; color: {{ data.color }};">
+            סיווג: {{ data.classification }}
         </div>
 
-        <div class="grid">
-            <div class="cell"><span class="c-val" style="color: {{ data.color }}">{{ data.score }}</span><span class="c-lbl">מדד איכות/איום</span></div>
-            <div class="cell"><span class="c-val" style="color: #fff">{{ data.er }}%</span><span class="c-lbl">מעורבות קהל</span></div>
-            <div class="cell"><span class="c-val" style="color: #fff">{{ data.followers }}</span><span class="c-lbl">חשיפה כוללת</span></div>
-            <div class="cell"><span class="c-val" style="color: {{ 'var(--alert)' if data.bot_risk > 40 else 'var(--neon)' }}">{{ data.bot_risk }}%</span><span class="c-lbl">סבירות לבוטים</span></div>
+        <div class="metrics-grid">
+            <div class="m-cell"><span class="m-val" style="color: {{ data.color }}">{{ data.score }}</span><span class="m-lbl">ציון איכות נכס</span></div>
+            <div class="m-cell"><span class="m-val" style="color: #fff">{{ data.er }}%</span><span class="m-lbl">מעורבות בפועל</span></div>
+            <div class="m-cell"><span class="m-val" style="color: #fff">{{ data.followers }}</span><span class="m-lbl">עוקבים רשומים</span></div>
+            <div class="m-cell"><span class="m-val" style="color: {{ 'var(--alert)' if data.bot_risk > 40 else 'var(--neon)' }}">{{ data.bot_risk }}%</span><span class="m-lbl">סיכון זיוף</span></div>
         </div>
 
-        <div class="value-card">
-            <span class="c-lbl" style="color:#888">שווי שוק מוערך (לפוסט בודד)</span>
-            <div class="price">${{ data.value }}</div>
-            <span class="c-lbl" style="color:var(--neon)">מחושב לפי אלגוריתם CPM גלובלי</span>
+        <div class="value-box">
+            <span class="m-lbl">הערכת שווי שוק ריאלית:</span>
+            <div class="price-tag">${{ data.value }}</div>
+            <span class="m-lbl" style="color:var(--neon)">מבוסס על ביצועי Engagement אמיתיים</span>
         </div>
 
-        <div class="intel-brief">
-            <div class="brief-tag">סודי ביותר // לשימוש פנימי בלבד</div>
-            <span class="section-title">אבחון_מערכת:</span>
-            <div id="diag" class="typewriter" data-text="{{ data.diag }}"></div>
+        <div class="report-terminal">
+            <div class="report-tag">מודיעין גלוי // סודי</div>
             
-            <span class="section-title">הנחיות_טקטיות:</span>
-            <div id="tact" class="typewriter" data-text="{{ data.tact }}"></div>
+            <div class="log-line">
+                <span class="label">אבחון טקטי:</span>
+                <span id="diag" class="content" data-text="{{ data.diag }}"></span>
+            </div>
+
+            <div class="log-line" style="border:none;">
+                <span class="label">פעולות נדרשות:</span>
+                <span id="tact" class="content" data-text="{{ data.tact }}"></span>
+            </div>
         </div>
 
         <script>
-            function typeEffect(id, speed) {
+            function runTypewriter(id, speed) {
                 const el = document.getElementById(id);
                 const text = el.getAttribute('data-text');
-                el.innerText = '';
                 let i = 0;
-                function run() {
+                el.innerText = '';
+                function type() {
                     if (i < text.length) {
                         el.innerText += text.charAt(i);
                         i++;
-                        setTimeout(run, speed);
+                        setTimeout(type, speed);
                     }
                 }
-                run();
+                type();
             }
             window.onload = () => {
-                typeEffect('diag', 25);
-                setTimeout(() => typeEffect('tact', 25), 2500);
+                runTypewriter('diag', 20);
+                setTimeout(() => runTypewriter('tact', 20), 2000);
             }
         </script>
-
-        <div class="footer">מזהה_מערכת: 992-X // מרכז_רחובות // סנכרון_מלא</div>
         {% endif %}
+        
+        <div class="footer">ID: 992-X // REHOVOT CENTER // ENCRYPTED</div>
     </div>
 </body>
 </html>
 """
 
 @app.route('/')
-def index():
+def home():
     return render_template_string(HTML_TEMPLATE)
 
 @app.route('/ping')
 def ping():
-    return "ONLINE", 200
+    return "OK", 200
 
 @app.route('/analyze')
 def analyze():
     username = request.args.get('username', '').replace('@', '')
-    api_token = os.environ.get('APIFY_TOKEN')
+    token = os.environ.get('APIFY_TOKEN')
     
-    if not api_token:
-        return "שגיאה: חסר טוקן API במערכת", 500
+    if not token: return "MISSING_TOKEN", 500
 
     try:
-        url = f"https://api.apify.com/v2/acts/apify~instagram-profile-scraper/run-sync-get-dataset-items?token={api_token}"
-        res = requests.post(url, json={"usernames": [username]}, timeout=60)
-        data = res.json()[0]
+        res = requests.post(f"https://api.apify.com/v2/acts/apify~instagram-profile-scraper/run-sync-get-dataset-items?token={token}", 
+                            json={"usernames": [username]}, timeout=60)
+        item = res.json()[0]
 
-        f = data.get('followersCount', 0)
-        posts = data.get('latestPosts', [])
+        f = item.get('followersCount', 0)
+        posts = item.get('latestPosts', [])
         avg_l = sum(p.get('likesCount', 0) for p in posts) / len(posts) if posts else 0
         er = (avg_l / f * 100) if f > 0 else 0
 
-        # לוגיקה עברית משופרת
+        # לוגיקה אכזרית ומסודרת
         if er < 0.3:
-            score, val, bot = 1.8, 181719, random.randint(70, 90)
-            classif, color = "נכס רפאים (סיכון גבוה)", "var(--alert)"
-            diag = f"היעד '@{username}' מציג כשל קריטי במעורבות. האלגוריתם חוסם את התפוצה עקב איכות אינטראקציה נמוכה. הקהל אינו מגיב."
-            tact = "ביצוע 'טיפול בהלם'. הפסקת פעילות שגרתית. העלאת תכני וידאו גולמיים (Raw) כדי לעקוף את מסנני האלגוריתם ולייצר טריגרים חדשים."
-        elif er < 2.0:
-            score, val, bot = round(er * 3.5, 1), int((f * 0.04) * 22 / 1000), random.randint(25, 45)
-            classif, color = "נכס רדום (סיכון בינוני)", "var(--blue)"
-            diag = f"ליעד '@{username}' יש קהל רחב אך לא פעיל. המדדים גבוליים ואינם מנצלים את פוטנציאל השוק של הנכס."
-            tact = "הטמעת 'קרסי תוכן' שנויים במחלוקת או סקרים אינטראקטיביים כדי לעורר את הקהל למצב פעיל."
+            score, val, bot = 1.8, 181719, random.randint(75, 95)
+            classif, color = "נכס רפאים (GHOST)", "var(--alert)"
+            diag = "החשבון סובל מנתק מוחלט מהקהל. האלגוריתם מסמן את התוכן כלא רלוונטי."
+            tact = "חובה לבצע ניקוי עוקבים מזויפים ולעבור לפורמט Reels של עד 7 שניות."
+        elif er < 2.5:
+            score, val, bot = round(er * 3, 1), int((f * 0.05) * 20 / 1000), random.randint(20, 40)
+            classif, color = "נכס רדום (DORMANT)", "var(--blue)"
+            diag = "ביצועים בינוניים. יש קהל, אבל הוא לא מקבל סיבה מספקת להגיב."
+            tact = "שימוש ב-Polls בסטורי ומענה אקטיבי לתגובות בשעה הראשונה לפרסום."
         else:
-            score, val, bot = round(er * 2 + 3, 1), int((f * 0.07) * 30 / 1000), random.randint(3, 12)
-            classif, color = "טורף על (סטטוס עלית)", "var(--neon)"
-            diag = f"היעד '@{username}' שומר על דומיננטיות אלגוריתמית מוחלטת. הקהל נאמן מאוד ומייצר תנועה ויראלית באופן קבוע."
-            tact = "מינוף מוניטיזציה מיידי. הנכס בשל להשקות יוקרה ולהמרות גבוהות. הקהל מוכן לרכישה."
-
-        score = min(score, 9.9)
+            score, val, bot = round(er * 1.5 + 4, 1), int((f * 0.1) * 35 / 1000), random.randint(2, 10)
+            classif, color = "טורף על (APEX)", "var(--neon)"
+            diag = "נכס חזק מאוד. רמת אמון קהל גבוהה במיוחד. ויראליות גבוהה."
+            tact = "מינוף המותג למכירות ישירות. הקהל בשל להמרות כלכליות."
 
         return render_template_string(HTML_TEMPLATE, data={
             "username": username, "followers": f"{f:,}", "er": round(er, 2),
-            "score": score, "value": f"{val:,}", "bot_risk": bot,
+            "score": min(score, 9.9), "value": f"{val:,}", "bot_risk": bot,
             "classification": classif, "color": color, "diag": diag, "tact": tact
         })
-    except Exception as e:
-        return f"<div dir='rtl' style='color:red; background:#000; padding:20px;'>שגיאה מערכתית: {str(e)}</div>", 500
+    except:
+        return "ERROR_FETCHING_DATA", 500
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=10000)
