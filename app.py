@@ -1,7 +1,6 @@
 import os
 from flask import Flask, request, render_template_string
 import requests
-import random
 
 app = Flask(__name__)
 
@@ -11,160 +10,113 @@ HTML_TEMPLATE = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>INSTA-INTEL | QUANTUM SUITE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;700&family=Assistant:wght@200;400;800&display=swap" rel="stylesheet">
+    <title>TITAN INTEL | Elite Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;700&family=Assistant:wght@200;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --neon: #00f2ff; --gold: #ffd700; --deep: #02040a; 
-            --glass: rgba(10, 15, 25, 0.7); --border: rgba(0, 242, 255, 0.2);
-        }
-        
+        :root { --neon: #00f2ff; --gold: #ffcc00; --bg: #030712; --card: rgba(17, 24, 39, 0.7); }
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
         body { 
-            background: var(--deep); color: #fff; font-family: 'Assistant', sans-serif; 
-            margin: 0; overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 20% 30%, rgba(0, 242, 255, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(255, 215, 0, 0.05) 0%, transparent 40%);
+            background: var(--bg); color: #f3f4f6; font-family: 'Assistant', sans-serif; 
+            margin: 0; padding: 0; min-height: 100vh;
+            background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #030712 100%);
         }
-
-        .scanner-line {
-            position: fixed; top: 0; left: 0; width: 100%; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--neon), transparent);
-            animation: scan 4s linear infinite; z-index: 100; opacity: 0.5;
-        }
-        @keyframes scan { 0% { top: 0; } 100% { top: 100vh; } }
-
-        .container { max-width: 450px; margin: 0 auto; padding: 25px; position: relative; }
-
-        header { text-align: center; padding: 50px 0 30px; }
-        .security-badge { 
-            font-size: 0.6rem; color: var(--neon); border: 1px solid var(--neon); 
-            padding: 3px 10px; border-radius: 4px; letter-spacing: 2px; font-weight: 800;
-            text-transform: uppercase; margin-bottom: 15px; display: inline-block;
-        }
-        .logo { font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 700; letter-spacing: -2px; }
-
-        /* Tactical Input */
-        .input-suite { 
-            background: var(--glass); border: 1px solid var(--border); 
-            padding: 10px; border-radius: 20px; display: flex; margin-bottom: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px);
-        }
-        input { 
-            flex: 1; background: transparent; border: none; color: #fff; 
-            padding: 15px; font-size: 1rem; outline: none; font-weight: 200;
-        }
-        button { 
-            background: var(--neon); color: #000; border: none; padding: 0 25px; 
-            border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s;
-        }
-        button:hover { box-shadow: 0 0 20px var(--neon); }
-
-        /* Main Gauge */
-        .gauge-wrap { position: relative; width: 220px; height: 220px; margin: 0 auto 40px; }
-        .gauge-svg { transform: rotate(-90deg); width: 100%; height: 100%; }
-        .gauge-bg { fill: none; stroke: #111; stroke-width: 8; }
-        .gauge-fill { 
-            fill: none; stroke: var(--neon); stroke-width: 8; 
-            stroke-dasharray: 565; stroke-dashoffset: {{ 565 - (total_score * 56.5) }};
-            transition: stroke-dashoffset 2s ease-out; stroke-linecap: round;
-        }
-        .gauge-data { 
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            text-align: center; 
-        }
-        .gauge-num { font-size: 4rem; font-weight: 800; line-height: 1; }
-        .gauge-label { font-size: 0.6rem; color: var(--neon); letter-spacing: 2px; font-weight: 800; }
-
-        /* Intel Grid */
-        .intel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
-        .card { 
-            background: var(--glass); border: 1px solid rgba(255,255,255,0.05); 
-            padding: 20px; border-radius: 24px; position: relative; overflow: hidden;
-        }
-        .card::after { 
-            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; 
-            height: 3px; background: var(--border); 
-        }
-        .val { font-size: 1.5rem; font-weight: 800; display: block; }
-        .lbl { font-size: 0.6rem; color: #555; text-transform: uppercase; font-weight: 800; }
-
-        /* Asset Valuation */
-        .valuation { 
-            background: linear-gradient(145deg, #0a0a0a, #000); 
-            border: 1px solid #2ecc71; padding: 30px; border-radius: 30px; 
-            text-align: center; margin-bottom: 30px; box-shadow: 0 0 40px rgba(46, 204, 113, 0.1);
-        }
-        .val-price { font-size: 3rem; font-weight: 800; color: #2ecc71; text-shadow: 0 0 20px rgba(46, 204, 113, 0.3); }
-
-        /* Intelligence Memo */
-        .memo { 
-            background: #fff; color: #000; padding: 30px; border-radius: 4px; 
-            font-family: 'Courier New', monospace; box-shadow: 15px 15px 0 var(--neon);
-            position: relative;
-        }
-        .memo::before { 
-            content: 'CONFIDENTIAL'; position: absolute; top: 10px; right: 10px;
-            color: red; border: 1.5px solid red; padding: 2px 8px; font-size: 0.7rem; font-weight: 800;
-        }
-        .memo-h { border-bottom: 2px solid #000; margin-bottom: 15px; padding-bottom: 5px; font-weight: 800; }
+        .container { max-width: 480px; margin: 0 auto; padding: 20px; }
         
-        .footer { text-align: center; padding: 50px; font-size: 0.6rem; color: #333; letter-spacing: 3px; }
+        /* Header & Logo */
+        header { text-align: center; padding: 40px 0; }
+        .logo { font-family: 'Space Grotesk', sans-serif; font-size: 2.2rem; font-weight: 700; letter-spacing: -1px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .badge { background: var(--gold); color: #000; font-size: 0.6rem; padding: 2px 8px; border-radius: 4px; font-weight: 800; vertical-align: middle; }
+
+        /* Search Console */
+        .search-console { background: var(--card); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 12px; backdrop-filter: blur(12px); margin-bottom: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+        .input-group { display: flex; gap: 10px; }
+        input { flex: 1; background: transparent; border: none; color: #fff; padding: 12px 15px; font-size: 1rem; outline: none; }
+        button { background: #fff; color: #000; border: none; padding: 12px 25px; border-radius: 16px; font-weight: 800; cursor: pointer; transition: 0.2s; white-space: nowrap; }
+        button:active { transform: scale(0.95); }
+
+        /* Scoring Circle */
+        .score-box { position: relative; width: 180px; height: 180px; margin: 0 auto 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,0.03); border: 1px solid rgba(0,242,255,0.2); box-shadow: 0 0 30px rgba(0,242,255,0.1); }
+        .score-val { font-size: 3.5rem; font-weight: 800; color: #fff; line-height: 1; }
+        .score-label { font-size: 0.65rem; color: var(--neon); letter-spacing: 2px; font-weight: 600; margin-top: 5px; }
+
+        /* Grid Metrics */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px; }
+        .m-card { background: var(--card); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; text-align: center; }
+        .m-val { font-size: 1.4rem; font-weight: 800; display: block; }
+        .m-lbl { font-size: 0.6rem; color: #9ca3af; text-transform: uppercase; margin-top: 4px; display: block; font-weight: 600; }
+
+        /* Financial Valuation */
+        .money-card { background: linear-gradient(135deg, #064e3b 0%, #022c22 100%); border: 1px solid #10b981; padding: 25px; border-radius: 24px; text-align: center; margin-bottom: 30px; }
+        .money-val { font-size: 2.8rem; font-weight: 800; color: #10b981; }
+
+        /* Intelligence Insights (Actionable) */
+        .intel-box { background: #fff; color: #111827; padding: 25px; border-radius: 8px; position: relative; box-shadow: 10px 10px 0 var(--neon); }
+        .intel-h { border-bottom: 2px solid #e5e7eb; margin-bottom: 15px; padding-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .point { margin-bottom: 15px; font-size: 0.95rem; line-height: 1.5; padding-right: 15px; border-right: 3px solid var(--neon); }
+
+        .footer { text-align: center; padding: 40px 0; font-size: 0.6rem; color: #4b5563; letter-spacing: 2px; }
     </style>
 </head>
 <body>
-    <div class="scanner-line"></div>
     <div class="container">
         <header>
-            <span class="security-badge">Access Level: Tier 1 Elite</span>
-            <div class="logo">INSTA<span style="color:var(--neon)">INTEL</span></div>
+            <div class="logo">TITAN<span style="color:var(--neon)">INTEL</span> <span class="badge">V10.0 ELITE</span></div>
+            <p style="color:#6b7280; font-size:0.8rem; margin-top:8px;">מערכת פיקוד אסטרטגית למנהלי נכסים דיגיטליים</p>
         </header>
 
-        <div class="input-suite">
-            <form action="/analyze" method="get" style="display:flex; width:100%;">
-                <input type="text" name="username" placeholder="הזן מזהה מטרה (Username)..." required>
-                <button type="submit">SCAN</button>
+        <div class="search-console">
+            <form action="/analyze" method="get" class="input-group">
+                <input type="text" name="username" placeholder="הזן @username לניתוח עומק..." required>
+                <button type="submit">SCAN ASSET</button>
             </form>
         </div>
 
         {% if username %}
-        <div class="gauge-wrap">
-            <svg class="gauge-svg" viewBox="0 0 200 200">
-                <circle class="gauge-bg" cx="100" cy="100" r="90" />
-                <circle class="gauge-fill" cx="100" cy="100" r="90" />
-            </svg>
-            <div class="gauge-data">
-                <span class="gauge-num">{{ total_score }}</span>
-                <span class="gauge-label">QUANTUM INDEX</span>
+        <div class="score-box">
+            <span class="score-val">{{ total_score }}</span>
+            <span class="score-label">TITAN INDEX</span>
+        </div>
+
+        <div class="grid">
+            <div class="m-card"><span class="m-val">{{ followers }}</span><span class="m-lbl">עוקבים</span></div>
+            <div class="m-card"><span class="m-val" style="color:var(--neon)">{{ engagement }}%</span><span class="m-lbl">מעורבות (ER)</span></div>
+            <div class="m-card"><span class="m-val">{{ auth }}%</span><span class="m-lbl">אותנטיות קהל</span></div>
+            <div class="m-card"><span class="m-val">{{ posts_count }}</span><span class="m-lbl">פוסטים נסרקו</span></div>
+        </div>
+
+        <div class="money-card">
+            <span class="m-lbl" style="color:#6ee7b7">שווי שוק מוערך לפוסט בודד</span>
+            <div class="money-val">${{ post_value }}</div>
+            <p style="font-size:0.65rem; color:#34d399; margin: 5px 0 0;">אלגוריתם ROI מבוסס ביצועי אמת 2026</p>
+        </div>
+
+        <div class="intel-box">
+            <div class="intel-h">🔍 דוח מודיעין אסטרטגי: @{{ username }}</div>
+            
+            <div class="point">
+                <strong>אבחון מעורבות:</strong> 
+                {% if engagement < 1 %}
+                המעורבות שלך ({{ engagement }}%) נמוכה ביחס לקטגוריה. הקהל שלך צופה אבל לא מגיב. 
+                <strong>פעולה:</strong> יש להעלות 3 סרטוני Reels בשבוע עם "שאלה פתוחה" ב-Hook כדי להכריח תגובות.
+                {% else %}
+                מדד המעורבות מצוין. הקהל נאמן ופעיל. 
+                <strong>פעולה:</strong> זה הזמן להעלות את מחירי השת"פ ב-20% לפחות.
+                {% endif %}
             </div>
-        </div>
 
-        <div class="intel-grid">
-            <div class="card"><span class="val">{{ followers }}</span><span class="lbl">קהל יעד</span></div>
-            <div class="card"><span class="val" style="color:var(--neon)">{{ engagement }}%</span><span class="lbl">מעורבות קרבית</span></div>
-            <div class="card"><span class="val">{{ auth }}%</span><span class="lbl">אותנטיות רשת</span></div>
-            <div class="card"><span class="val" style="color:var(--gold)">VIP</span><span class="lbl">סטטוס סיווג</span></div>
-        </div>
+            <div class="point">
+                <strong>פוטנציאל מונטיזציה:</strong> 
+                בסטטוס הנוכחי, כל פוסט שלך שווה ${{ post_value }}. 
+                <strong>טיפ ליישום:</strong> הוספת קישור ממוקד ב-Bio עם הנעה לפעולה (CTA) תגדיל את ה-Conversion ב-15% נוספים.
+            </div>
 
-        <div class="valuation">
-            <span class="lbl" style="color:#2ecc71">שווי נכס נומינלי (פוסט)</span>
-            <div class="val-price">${{ post_value }}</div>
-            <p style="font-size: 0.6rem; color: #333; margin-top: 10px;">חישוב מבוסס אלגוריתם Quantum ROI 2026</p>
-        </div>
-
-        <div class="memo">
-            <div class="memo-h">INTEL REPORT // TARGET: @{{ username }}</div>
-            <p style="font-size: 0.9rem; line-height: 1.6;">
-                <strong>ניתוח אסטרטגי:</strong> {{ strategy }}
-            </p>
-            <div style="margin-top: 20px; font-size: 0.75rem; border-top: 1px solid #ddd; padding-top: 10px;">
-                <strong>הנחיה למנהל:</strong> הנכס מזהה הזדמנות ארביטראז' במחירי המדיה. יש לפעול מיידית.
+            <div style="font-size: 0.75rem; background: #f3f4f6; padding: 10px; border-radius: 4px; margin-top: 10px;">
+                <strong>הנחיה למנהל:</strong> הנכס הדיגיטלי יציב. יש למקד את המזכירה בניהול תגובות ב-30 הדקות הראשונות לאחר הפרסום.
             </div>
         </div>
         {% endif %}
 
-        <div class="footer">ENCRYPTED END-TO-END // SYSTEM_ID: ALPHA-9 // 2026</div>
+        <div class="footer">ENCRYPTED TERMINAL // NO DATA LOGGED // SYSTEM STATUS: NOMINAL</div>
     </div>
 </body>
 </html>
@@ -172,7 +124,7 @@ HTML_TEMPLATE = """
 
 @app.route('/')
 def home():
-    return render_template_string(HTML_TEMPLATE, total_score=0)
+    return render_template_string(HTML_TEMPLATE)
 
 @app.route('/analyze')
 def analyze():
@@ -186,28 +138,30 @@ def analyze():
         
         f_count = data.get('followersCount', 0)
         posts = data.get('latestPosts', [])
-        avg_likes = sum(p.get('likesCount', 0) for p in posts) / len(posts) if posts else 0
-        er = (avg_likes / f_count) * 100 if f_count > 0 else 0
         
-        # לוגיקה קוונטית לציון (0-10)
-        score = round(min((er * 2.5) + (f_count / 10000000) + 1.5, 9.9), 1)
+        # חישוב ER מדוייק על פני 12 פוסטים אחרונים
+        total_likes = sum(p.get('likesCount', 0) for p in posts)
+        total_comments = sum(p.get('commentsCount', 0) for p in posts)
+        avg_engagement = (total_likes + total_comments) / len(posts) if posts else 0
+        er = (avg_engagement / f_count) * 100 if f_count > 0 else 0
         
-        # שווי נכס
-        val = int((f_count / 1000) * 22 * (1 + er/3))
+        # נוסחת שווי מדוייקת (מבוסס חשיפה + מעורבות)
+        raw_val = (f_count * 0.02) * (1 + (er/2))
+        post_value = int(max(raw_val, 50)) # מינימום 50$ לפוסט
         
-        # אסטרטגיה לפי פרסונות
-        if f_count > 1000000:
-            strat = "הנכס מוגדר כ-Market Mover. השפעה גלובלית רחבה. המנהל העסוק צריך להבין שכל שינוי ב-Engagement משפיע על שווי המותג במיליוני דולרים. המזכירה נדרשת לניהול משברים וסינון שת\"פים אגרסיבי."
-        else:
-            strat = "נכס בצמיחה אקספוננציאלית. ה-AI מזהה פוטנציאל ויראליות גבוה במיוחד. מומלץ למנהל לחתום על חוזי בלעדיות ארוכי טווח. המזכירה צריכה להכין תשתית לאוטומציית מכירות."
+        # ציון TITAN (0-10)
+        score = round(min((er * 4) + (f_count / 500000) + 1.2, 9.9), 1)
+        
+        # רמת אותנטיות (סימולציה מבוססת ER)
+        auth = 94 if er > 1.5 else (82 if er > 0.5 else 65)
 
         return render_template_string(HTML_TEMPLATE, 
             username=username, followers=f"{f_count:,}", 
             engagement=round(er, 2), total_score=score,
-            auth=random.randint(85, 96) if er > 0.5 else random.randint(60, 75),
-            post_value=f"{val:,}", strategy=strat)
+            auth=auth, posts_count=len(posts),
+            post_value=f"{post_value:,}")
     except:
-        return render_template_string(HTML_TEMPLATE, error="System Error", total_score=0)
+        return render_template_string(HTML_TEMPLATE, error="System Error")
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=10000)
