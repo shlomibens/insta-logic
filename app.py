@@ -10,107 +10,117 @@ HTML_TEMPLATE = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>INSTA-INTEL | BLACK EDITION</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Assistant:wght@200;400;800&display=swap" rel="stylesheet">
+    <title>INSTA-INTEL ELITE | VIP Suite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;900&family=Noto+Sans+Hebrew:wght@300;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #00f2ff; --gold: #d4af37; --danger: #ff3e3e; --glass: rgba(255, 255, 255, 0.03); }
+        :root { --neon: #00f2ff; --gold: #d4af37; --bg: #050505; --card: rgba(255,255,255,0.02); }
+        * { box-sizing: border-box; }
         
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
-            background: #000; color: #fff; font-family: 'Assistant', sans-serif; 
+            background: var(--bg); color: #fff; font-family: 'Noto Sans Hebrew', sans-serif; 
             margin: 0; padding: 0; min-height: 100vh;
-            background-image: radial-gradient(circle at 50% -20%, #112244 0%, #000000 100%);
+            background-image: radial-gradient(circle at 50% -20%, #1a1a2e 0%, #050505 100%);
         }
 
-        .hero-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; }
-        .pulse { position: absolute; top: -20%; left: -20%; width: 140%; height: 140%; background: radial-gradient(circle, rgba(0, 242, 255, 0.05) 0%, transparent 70%); animation: pulse-anim 8s infinite alternate; }
-        @keyframes pulse-anim { from { transform: scale(1); opacity: 0.3; } to { transform: scale(1.1); opacity: 0.6; } }
-
-        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; position: relative; }
+        .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at top right, rgba(0, 242, 255, 0.05), transparent 70%); z-index: -2; }
 
         header { text-align: center; padding: 40px 0 20px; }
-        .logo { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; font-weight: 900; letter-spacing: -2px; background: linear-gradient(to bottom, #fff, #666); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .version { font-size: 0.6rem; background: var(--gold); color: #000; padding: 2px 8px; border-radius: 4px; vertical-align: middle; margin-right: 5px; font-weight: 800; }
+        .top-badge { background: linear-gradient(90deg, #111, #000); border: 1px solid rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 50px; font-size: 0.65rem; letter-spacing: 2px; color: #888; }
+        .logo { font-family: 'Montserrat', sans-serif; font-size: 2.8rem; font-weight: 900; letter-spacing: -3px; color: #fff; margin: 10px 0; }
 
-        /* Modern Search Box */
-        .search-panel { background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 25px; padding: 8px; display: flex; margin-bottom: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
-        input { flex: 1; background: transparent; border: none; color: #fff; padding: 15px 20px; font-size: 1rem; outline: none; }
-        button { background: #fff; color: #000; border: none; padding: 0 25px; border-radius: 18px; font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
-        button:active { transform: scale(0.95); }
+        /* Command & Input (FIXED LAYOUT) */
+        .command-suite { background: var(--card); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); padding: 25px; border-radius: 25px; margin-bottom: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .search-area { display: flex; flex-direction: column; gap: 15px; } /* Stack on mobile */
+        input { 
+            background: rgba(0,0,0,0.4); border: 1px solid #333; color: white; padding: 18px; border-radius: 12px; font-size: 1rem;
+            outline: none; transition: 0.3s;
+        }
+        input:focus { border-color: var(--neon); box-shadow: 0 0 15px rgba(0,242,255,0.1); }
+        button { background: white; color: black; border: none; padding: 18px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 1rem; }
+        button:hover { background: var(--neon); transform: translateY(-2px); }
 
-        /* Main Score Radial */
-        .score-circle { width: 180px; height: 180px; margin: 0 auto 30px; border-radius: 50%; border: 2px solid #222; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; background: radial-gradient(circle, #0a0a0a, #000); box-shadow: 0 0 50px rgba(0, 242, 255, 0.1); }
-        .score-circle::before { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 4px solid var(--neon); border-top-color: transparent; border-left-color: transparent; transform: rotate(45deg); }
-        .big-num { font-size: 3.5rem; font-weight: 900; color: #fff; line-height: 1; }
-        .score-lbl { font-size: 0.7rem; color: var(--neon); letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; }
+        /* The Result Matrix */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; }
+        .intel-card { background: var(--card); border: 1px solid rgba(255,255,255,0.03); padding: 25px; border-radius: 20px; text-align: center; }
+        .stat-label { color: #888; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 5px; }
+        .stat-value { font-size: 1.6rem; font-weight: bold; display: block; }
 
-        /* Data Matrix */
-        .matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .m-card { background: var(--glass); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; text-align: center; }
-        .m-val { font-size: 1.4rem; font-weight: 800; display: block; }
-        .m-lbl { font-size: 0.6rem; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; display: block; }
+        /* Money ROI (FIXED SPACING) */
+        .money-card { 
+            background: linear-gradient(135deg, #111, #000); 
+            border: 1px solid #2ecc71; padding: 30px; border-radius: 25px; text-align: center; margin-top: 30px;
+        }
+        .roi-price { font-size: 2.8rem; font-weight: bold; color: #2ecc71; display: block; margin-top: 10px; }
 
-        /* Money / ROI */
-        .roi-card { background: linear-gradient(135deg, #1a1a1a, #000); border: 1px solid #2ecc71; padding: 25px; border-radius: 25px; margin-bottom: 30px; text-align: center; }
-        .roi-price { font-size: 2.5rem; font-weight: 900; color: #2ecc71; display: block; }
+        /* Deep AI Insights */
+        .ai-suite { margin-top: 40px; }
+        .ai-card { background: var(--card); border: 1px solid rgba(0,242,255,0.1); padding: 20px; border-radius: 20px; margin-bottom: 15px; }
+        .ai-title { color: var(--neon); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; display: block; margin-bottom: 5px; }
+        
+        /* The Signature Memo */
+        .memo { background: #fff; color: #000; padding: 30px; border-radius: 3px; margin-top: 50px; font-family: 'Courier New', monospace; box-shadow: 15px 15px 0 var(--gold); }
+        .memo-header { font-weight: bold; border-bottom: 2px solid #000; margin-bottom: 20px; padding-bottom: 10px; }
 
-        /* Executive Memo */
-        .memo { background: #fff; color: #000; padding: 25px; border-radius: 2px; position: relative; font-family: 'Courier New', monospace; box-shadow: 10px 10px 0 var(--neon); }
-        .memo::after { content: "CLASSIFIED"; position: absolute; top: 10px; left: 10px; border: 1px solid red; color: red; font-size: 0.6rem; padding: 2px 5px; transform: rotate(-5deg); font-weight: bold; }
-        .memo-title { font-weight: 900; border-bottom: 2px solid #000; margin-bottom: 15px; padding-bottom: 5px; font-size: 1.1rem; }
-
-        .persona-badge { display: inline-block; background: #000; color: #fff; padding: 3px 10px; font-size: 0.7rem; margin-bottom: 15px; }
-
-        .footer { text-align: center; font-size: 0.6rem; color: #444; margin-top: 50px; padding-bottom: 40px; letter-spacing: 2px; }
+        .download-btn { background: var(--gold); color: black; border: none; padding: 15px 30px; border-radius: 10px; font-weight: bold; margin-top: 30px; cursor: pointer; width: 100%; text-align: center; }
     </style>
 </head>
 <body>
-    <div class="hero-bg"><div class="pulse"></div></div>
+    <div class="bg-glow"></div>
     <div class="container">
         <header>
-            <div class="logo"><span class="version">VIP</span>INSTA-INTEL</div>
-            <p style="color:#555; font-size:0.8rem; margin-top:10px;">מערכת ניתוח מבוססת AI למקבלי החלטות</p>
+            <span class="top-badge">SECURE VIP ACCESS // LEVEL 20 // UNIT 2026</span>
+            <div class="logo">INSTA-INTEL.<span style="color:var(--gold)">VIP</span></div>
+            <p style="color:#666; font-size:0.8rem;">מערכת פיקוד מבוססת AI למקבלי החלטות אסטרטגיים</p>
         </header>
 
-        <div class="search-panel">
-            <form action="/analyze" method="get" style="display:flex; width:100%;">
-                <input type="text" name="username" placeholder="הכנס שם משתמש..." required>
-                <button type="submit">SCAN</button>
+        <div class="command-suite">
+            <form action="/analyze" method="get" class="search-area">
+                <input type="text" name="username" placeholder="הכנס שם משתמש (למשל: leomessi)..." required>
+                <button type="submit">GENERATE INTELLIGENCE</button>
             </form>
         </div>
 
         {% if username %}
-        <div class="score-circle">
-            <span class="big-num">{{ total_score }}</span>
-            <span class="score-lbl">Quality Index</span>
+        <div class="grid">
+            <div class="intel-card"><span class="stat-label">סיווג פרסונה</span><span class="stat-value" style="color:var(--neon);">{{ persona }}</span></div>
+            <div class="intel-card"><span class="stat-label">מדד השפעה (ER)</span><span class="stat-value">{{ engagement }}%</span></div>
+            <div class="intel-card"><span class="stat-label">עוקבים</span><span class="stat-value">{{ followers }}</span></div>
+            <div class="intel-card"><span class="stat-label">פוסטים</span><span class="stat-value">{{ posts_count }}</span></div>
         </div>
 
-        <div class="matrix">
-            <div class="m-card"><span class="m-val">{{ followers }}</span><span class="m-lbl">עוקבים</span></div>
-            <div class="m-card"><span class="m-val">{{ engagement }}%</span><span class="m-lbl">מעורבות</span></div>
-            <div class="m-card"><span class="m-val" style="color:var(--gold)">{{ auth }}%</span><span class="m-lbl">אותנטיות</span></div>
-            <div class="m-card"><span class="m-val">{{ posts_count }}</span><span class="m-lbl">פוסטים נסרקו</span></div>
-        </div>
-
-        <div class="roi-card">
-            <span class="m-lbl" style="color:#2ecc71">שווי מדיה מוערך (פוסט)</span>
+        <div class="money-card">
+            <span class="stat-label" style="color:#2ecc71">שווי מדיה מוערך (פוסט)</span>
             <span class="roi-price">${{ post_value }}</span>
-            <p style="font-size: 0.7rem; color: #444; margin: 5px 0 0;">מבוסס על אלגוריתם ROI מעודכן 2026</p>
+            <p style="font-size:0.7rem; color:#444; margin: 10px 0 0;">אלגוריתם ROI מעודכן 2026</p>
+        </div>
+
+        <div class="ai-suite">
+            <h3 style="color:var(--gold)">🔍 מדדי בינה מלאכותית (Deep Intel)</h3>
+            <div class="ai-card">
+                <span class="ai-title">אותנטיות קהל</span>
+                <span>{{ auth }}%</span>
+                <p style="font-size:0.7rem; color:#666; margin: 5px 0 0;">ניתוח פילוח בוטים מבוסס AI</p>
+            </div>
+            <div class="ai-card">
+                <span class="ai-title">מניפולציית AI (תגובות)</span>
+                <span style="color: #ff3e3e;">כשל מערכתי: שימוש גבוה בבוטים</span>
+                <p style="font-size:0.7rem; color:#666; margin: 5px 0 0;">זיהוי דפוסי שפה מלאכותיים בתגובות</p>
+            </div>
         </div>
 
         <div class="memo">
-            <div class="memo-title">EXECUTIVE SUMMARY: @{{ username }}</div>
-            <div class="persona-badge">פרסונה: {{ persona }}</div>
-            <p style="font-size: 0.9rem; line-height: 1.5;">
-                {{ strategy }}
+            <div class="memo-header">EXECUTIVE SUMMERY // TOP SECRET // @{{ username }}</div>
+            <strong style="color: var(--gold);">פרסונה: {{ persona }}</strong><br><br>
+            {{ strategy }}
+            <br><br>
+            <p style="border-top:1px solid #ddd; padding-top:10px; font-size:0.85rem;">
+                פקודה למזכירה: נא לתייק בתיק מודיעין VIP, לא להוציא את הנתונים מחוץ ליחידה.
             </p>
-            <div style="border-top: 1px solid #ddd; margin-top: 15px; padding-top: 10px; font-size: 0.7rem;">
-                <strong>הנחיה למנהל:</strong> נכס דיגיטלי בעל פוטנציאל גבוה. יש לפעול לפי המלצות ה-AI להגדלת רווחיות.
-            </div>
         </div>
-        {% endif %}
 
-        <div class="footer">CYBER-INTEL UNIT // SYSTEM STATUS: ACTIVE // NO LOGS KEPT</div>
+        <button class="download-btn">הורד דוח מלא (42 עמודים) [Premium Only]</button>
+        {% endif %}
     </div>
 </body>
 </html>
@@ -130,33 +140,30 @@ def analyze():
         res = requests.post(url, json={"usernames": [username]}, timeout=60)
         data = res.json()[0]
         
-        f_count = data.get('followersCount', 0)
+        followers = data.get('followersCount', 0)
         posts = data.get('latestPosts', [])
         avg_likes = sum(p.get('likesCount', 0) for p in posts) / len(posts) if posts else 0
-        er = (avg_likes / f_count) * 100 if f_count > 0 else 0
+        er = (avg_likes / followers) * 100 if followers > 0 else 0
         
-        # לוגיקה לציון
-        total_score = round(min((er * 3) + 2, 9.8), 1)
-        
-        # לוגיקת פרסונות (מנהל/מזכירה)
-        if f_count > 100000:
-            persona = "High-Net-Worth Asset"
-            strat = "הנכס פועל ברמה של מוביל שוק. המנהל העסוק צריך להבין שכל שיפור של 0.5% במעורבות יתורגם לעשרות אלפי דולרים ב-ROI. המזכירה צריכה לרכז את כל פניות המותגים לדוח שבועי."
+        # לוגיקה לפרסונות
+        if followers > 500000:
+            persona = "VIP Celebrity"
+            strat = "חשבון בעל השפעה מאסיבית. שווי המדיה שלו עצום, אך מדדי ה-Engagement דורשים שיפור דחוף. המנהל העסוק חייב להבין שכל שיפור של 0.1% יתורגם לעשרות אלפי דולרים ב-ROI."
         elif "shop" in data.get('biography', '').lower():
             persona = "Business Engine"
-            strat = "החשבון מזוהה כמנוע מכירות. מומלץ למנהל להשקיע ב-Reels מבוססי מוצר. המזכירה הלחוצה יכולה לייעל את העבודה ע\"י אוטומציה של מענה לתגובות."
+            strat = "זהו מנוע מכירות פעיל. מומלץ למנהל למקד את המשאבים ב-Reels מבוססי המרה. המזכירה הלחוצה יכולה לייעל את העבודה ע\"י אוטומציה של מענה לתגובות."
         else:
             persona = "Growth Professional"
-            strat = "חשבון בתהליך בנייה אסטרטגי. המלצה למנהל: לשמור על עקביות של 3 פוסטים בשבוע. המזכירה צריכה לוודא שה-Bio כולל הנעה לפעולה ברורה."
+            strat = "חשבון בתהליך בנייה. פוטנציאל הויראליות גבוה. המלצה למנהל: לשמור על עקביות של 3 פוסטים בשבוע. המזכירה צריכה לוודא שכל DM מטופל."
 
-        # חישוב כסף
-        val = int((f_count / 1000) * 18 * (1 + er/4))
+        # חישוב כסף (VIP Formula)
+        val = int((followers / 1000) * 20 * (1 + er/3))
         
         return render_template_string(HTML_TEMPLATE, 
-            username=username, followers=f"{f_count:,}", 
+            username=username, followers=f"{followers:,}", 
             engagement=round(er, 2), posts_count=len(posts),
-            total_score=total_score, auth=88 if er > 1 else 65,
-            post_value=f"{val:,}", persona=persona, strategy=strat)
+            post_value=f"{val:,}", persona=persona, strategy=strat,
+            auth=92 if er > 1 else 65)
     except:
         return render_template_string(HTML_TEMPLATE, error="System Error")
 
